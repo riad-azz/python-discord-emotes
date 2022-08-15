@@ -22,7 +22,7 @@ The application consist of 2 parts :
 
 ![Auth Token screen](readme/auth_screen.png)
 
-* Second part will be the interface used to selec servers and send emotes.
+* Second part will be the interface used to select servers and send emotes.
 
 ![Emotes screen](readme/emotes_screen.png)
 
