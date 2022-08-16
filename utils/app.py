@@ -296,7 +296,7 @@ class MyApp(CTk):
         # User info labels
         self.user_frame = CTkFrame(self)
         self.user_frame.place(x=0, y=0, relwidth=1, relheight=0.15)
-        self.avatar = load_avatar(self.user['avatar_url'])
+        self.avatar = load_avatar()
         self.l_avatar = CTkLabel(self.user_frame, image=self.avatar)
         self.l_avatar.place(relx=0.01, rely=0.5, relheight=0.8, relwidth=0.15, anchor="w")
         self.l_username = CTkLabel(self.user_frame, text=self.user["username"], text_font=Font(size=26), anchor="w")
@@ -385,9 +385,9 @@ class MyApp(CTk):
         curr_col = 0
         curr_height = 0
         emote_per_row = None
+        padding = None
         self.update_idletasks()
         frame_width = self.cv_frame.winfo_width()
-        padding = frame_width // 100
         self.cv_frame.columnconfigure(0, weight=0)
         emote_list = sorted(self.servers[server]["emotes"], key=lambda d: not d['is_gif'])
         for emote in emote_list:
@@ -398,16 +398,21 @@ class MyApp(CTk):
             btn.grid(row=curr_row, column=curr_col, padx=padding, pady=10, sticky="nesw")
             curr_col += 1
             self.emotes_widgets.append(btn)
+
             self.update_idletasks()
             if emote_per_row is None:
                 emote_width = btn.winfo_width()
-                emote_per_row = 3 if frame_width // emote_width >= 3 else 2
+                emote_per_row = 3 if frame_width >= (emote_width * 3) else 2
+                padding = (frame_width // emote_width) * 2.5
 
             if curr_height < btn.winfo_height():
                 curr_height = btn.winfo_height() + 20
-            if curr_col >= 3:
+            if curr_col >= emote_per_row:
                 curr_row += 1
                 curr_col = 0
+
+        # Reposition first button with correct padding
+        self.emotes_widgets[0].grid(row=0, column=0, padx=padding, pady=10, sticky="nesw")
 
         self.cv_frame.configure(height=curr_height * len(emote_list))
 
