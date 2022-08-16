@@ -8,7 +8,7 @@ from PIL import Image, ImageOps, ImageDraw
 
 
 # ----------- LOCAL UTILS -----------
-def load_avatar(url):
+def load_avatar():
     avatar_path = "./data/avatar/avatar.png"
     default_path = "./data/avatar/avatar_default.png"
     if not path.exists("./data/avatar/avatar.png"):

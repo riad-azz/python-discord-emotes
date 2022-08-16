@@ -387,7 +387,7 @@ class MyApp(CTk):
         emote_per_row = None
         self.update_idletasks()
         frame_width = self.cv_frame.winfo_width()
-        padding = frame_width / 55
+        padding = frame_width // 100
         self.cv_frame.columnconfigure(0, weight=0)
         emote_list = sorted(self.servers[server]["emotes"], key=lambda d: not d['is_gif'])
         for emote in emote_list:
