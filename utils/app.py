@@ -294,16 +294,16 @@ class MyApp(CTk):
         # ---- App Widgets ----
         # -- User widgets --
         # User info labels
-        self.user_frame = CTkFrame(self, height=84)
-        self.user_frame.place(x=0, y=0, relwidth=1)
+        self.user_frame = CTkFrame(self)
+        self.user_frame.place(x=0, y=0, relwidth=1, height=84)
         self.avatar = load_avatar(self.user['avatar_url'])
         self.l_avatar = CTkLabel(self.user_frame, image=self.avatar)
-        self.l_avatar.place(x=-28, y=10)
+        self.l_avatar.place(relx=0.01, rely=0.5, relheight=0.8, relwidth=0.15, anchor="w")
         self.l_username = CTkLabel(self.user_frame, text=self.user["username"], text_font=Font(size=26), anchor="w")
         self.l_username.place(x=80, y=30, anchor="w")
         self.l_user_tag = CTkLabel(self.user_frame, text=self.user["user_tag"], text_font=Font(size=14),
                                    text_color="grey", anchor="w")
-        self.l_user_tag.place(x=80, y=62, width=70, anchor="w")
+        self.l_user_tag.place(x=80, y=62, anchor="w")
         # Emote server Label
         self.l_emote_server = CTkLabel(self.user_frame, text="Emotes Server", text_font=Font(size=18))
         self.l_emote_server.place(x=300, y=22, anchor="w")
@@ -312,12 +312,16 @@ class MyApp(CTk):
         # Option menu for selecting where to get emotes from
         self.op_emote_server = CTkOptionMenu(self.user_frame, values=emote_server_options, text_font=Font(size=12),
                                              command=self.emote_server_option)
-        self.op_emote_server.place(x=300, y=58, width=162, anchor="w")
+        self.op_emote_server.place(x=300, y=58, relwidth=0.32, anchor="w")
         # -- Emotes widgets --
         self.em_frame = CTkFrame(self, fg_color="grey10", border_color="grey10")
-        self.em_frame.place(x=0, y=90, width=500, height=404)
+        self.em_frame.place(x=0, y=90, relwidth=1, relheight=0.74)
+        self.update_idletasks()
+        em_frame_width = self.em_frame.winfo_width()
+        em_frame_height = self.em_frame.winfo_height()
         self.em_canvas = CTkCanvas(self.em_frame, bg="grey10")
-        self.cv_frame = CTkFrame(self.em_canvas, width=480, height=400, fg_color="grey10", border_color="grey10")
+        self.cv_frame = CTkFrame(self.em_canvas, width=em_frame_width, height=em_frame_height, fg_color="grey10",
+                                 border_color="grey10")
         self.scrollbar = CTkScrollbar(self.em_frame, command=self.em_canvas.yview)
         self.em_canvas.configure(yscrollcommand=self.scrollbar.set)
         self.em_canvas.pack(side="left", fill="both", expand=True)
@@ -333,13 +337,13 @@ class MyApp(CTk):
         # Target server selector
         self.op_target_server = CTkOptionMenu(self, values=target_server_options, text_font=Font(size=12),
                                               command=self.target_server_option)
-        self.op_target_server.place(x=150, y=525, width=162, anchor="w")
+        self.op_target_server.place(x=150, y=525, relwidth=0.32, anchor="w")
         # List of channels for current server
         server_channels_options = [channel["name"] for channel in self.servers[self.curr_server]["channels"]]
         # Target channel selector
         self.op_target_channel = CTkOptionMenu(self, text_font=Font(size=12), values=server_channels_options,
                                                command=self.target_channel_option)
-        self.op_target_channel.place(x=330, y=525, width=162, anchor="w")
+        self.op_target_channel.place(x=330, y=525, relwidth=0.32, anchor="w")
         self.curr_channel = self.servers[self.curr_server]["channels"][0]["id"]
         # -- Preload all images --
         images_thread = Thread(target=self.load_images)
@@ -377,21 +381,28 @@ class MyApp(CTk):
         self.get_emotes(self.curr_server)
 
     def get_emotes(self, server):
-        curr_x = 5
+        curr_x = 8
         curr_y = 10
+        curr_height = 0
+        max_height = 0
         emote_list = sorted(self.servers[server]["emotes"], key=lambda d: not d['is_gif'])
         for emote in emote_list:
-            color = "grey6"
+            color = "grey10"
             btn = CTkButton(self.cv_frame, image=self.images[emote["file_name"][:-4]], text=emote["name"],
-                            height=40, width=40, fg_color=color, compound="top",
+                            fg_color=color, compound="top",
                             command=functools.partial(self.send_emote, emote["url"]))
-            btn.place(x=curr_x, y=curr_y, width=150, height=90)
+            btn.place(x=curr_x, y=curr_y, relwidth=0.25)
             self.emotes_widgets.append(btn)
-            curr_x += 160
-            if curr_x == (160 * 3) + 5:
-                curr_x = 5
-                curr_y += 100
-        self.cv_frame.configure(height=curr_y + 100)
+            self.update_idletasks()
+            curr_x += btn.winfo_width() + 10
+            if curr_height < btn.winfo_height():
+                curr_height = btn.winfo_height() + 20
+            if curr_x >= ((btn.winfo_reqwidth() + 10) * 3) + 8:
+                curr_x = 6
+                curr_y += curr_height
+                max_height = curr_height
+                curr_height = 0
+        self.cv_frame.configure(height=curr_y + max_height)
 
     def monitor_sender_thread(self, thread):
         if thread.is_alive():
