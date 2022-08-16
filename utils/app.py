@@ -316,17 +316,16 @@ class MyApp(CTk):
         # -- Emotes widgets --
         self.em_frame = CTkFrame(self, fg_color="grey10", border_color="grey10")
         self.em_frame.place(x=0, y=90, relwidth=1, relheight=0.74)
-        self.update_idletasks()
-        em_frame_width = self.em_frame.winfo_width()
-        em_frame_height = self.em_frame.winfo_height()
         self.em_canvas = CTkCanvas(self.em_frame, bg="grey10")
-        self.cv_frame = CTkFrame(self.em_canvas, width=em_frame_width, height=em_frame_height, fg_color="grey10",
-                                 border_color="grey10")
         self.scrollbar = CTkScrollbar(self.em_frame, command=self.em_canvas.yview)
         self.em_canvas.configure(yscrollcommand=self.scrollbar.set)
         self.em_canvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="right", fill="y")
-        self.em_canvas.create_window((0, 0), window=self.cv_frame, anchor='nw')
+        self.update_idletasks()
+        canvas_width = self.em_canvas.winfo_width()
+        self.cv_frame = CTkFrame(self.em_canvas, fg_color="grey10", border_color="grey10")
+        self.em_canvas.create_window((0, 0), window=self.cv_frame, anchor='nw',
+                                     width=canvas_width - (canvas_width * 0.18))
         self.cv_frame.bind("<Configure>", lambda e: self.em_canvas.configure(scrollregion=self.em_canvas.bbox("all")))
         # -- Target server widgets --
         self.l_target_server = CTkLabel(self, text="Target Server", text_font=Font(size=16))
@@ -384,26 +383,19 @@ class MyApp(CTk):
         curr_row = 0
         curr_col = 0
         curr_height = 0
-        emote_per_row = None
-        padding = None
+        emote_per_row = 3
         self.update_idletasks()
         frame_width = self.cv_frame.winfo_width()
-        self.cv_frame.columnconfigure(0, weight=0)
         emote_list = sorted(self.servers[server]["emotes"], key=lambda d: not d['is_gif'])
         for emote in emote_list:
             color = "grey10"
             btn = CTkButton(self.cv_frame, image=self.images[emote["file_name"][:-4]], text=emote["name"],
-                            fg_color=color, compound="top",
+                            fg_color=color, compound="top", width=(frame_width // 3) - 20,
                             command=functools.partial(self.send_emote, emote["url"]))
-            btn.grid(row=curr_row, column=curr_col, padx=padding, pady=10, sticky="nesw")
+            btn.grid(row=curr_row, column=curr_col, pady=10, padx=10, sticky="nesw")
             curr_col += 1
             self.emotes_widgets.append(btn)
-
             self.update_idletasks()
-            if emote_per_row is None:
-                emote_width = btn.winfo_width()
-                emote_per_row = 3 if frame_width >= (emote_width * 3) else 2
-                padding = (frame_width // emote_width) * 2.5
 
             if curr_height < btn.winfo_height():
                 curr_height = btn.winfo_height() + 20
@@ -412,7 +404,7 @@ class MyApp(CTk):
                 curr_col = 0
 
         # Reposition first button with correct padding
-        self.emotes_widgets[0].grid(row=0, column=0, padx=padding, pady=10, sticky="nesw")
+        self.emotes_widgets[0].grid(row=0, column=0, padx=10, pady=10, sticky="nesw")
 
         self.cv_frame.configure(height=curr_height * len(emote_list))
 
