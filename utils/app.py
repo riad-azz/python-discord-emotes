@@ -295,7 +295,7 @@ class MyApp(CTk):
         # -- User widgets --
         # User info labels
         self.user_frame = CTkFrame(self)
-        self.user_frame.place(x=0, y=0, relwidth=1, height=84)
+        self.user_frame.place(x=0, y=0, relwidth=1, relheight=0.15)
         self.avatar = load_avatar(self.user['avatar_url'])
         self.l_avatar = CTkLabel(self.user_frame, image=self.avatar)
         self.l_avatar.place(relx=0.01, rely=0.5, relheight=0.8, relwidth=0.15, anchor="w")
@@ -381,28 +381,35 @@ class MyApp(CTk):
         self.get_emotes(self.curr_server)
 
     def get_emotes(self, server):
-        curr_x = 8
-        curr_y = 10
+        curr_row = 0
+        curr_col = 0
         curr_height = 0
-        max_height = 0
+        emote_per_row = None
+        self.update_idletasks()
+        frame_width = self.cv_frame.winfo_width()
+        padding = frame_width / 55
+        self.cv_frame.columnconfigure(0, weight=0)
         emote_list = sorted(self.servers[server]["emotes"], key=lambda d: not d['is_gif'])
         for emote in emote_list:
             color = "grey10"
             btn = CTkButton(self.cv_frame, image=self.images[emote["file_name"][:-4]], text=emote["name"],
                             fg_color=color, compound="top",
                             command=functools.partial(self.send_emote, emote["url"]))
-            btn.place(x=curr_x, y=curr_y, relwidth=0.25)
+            btn.grid(row=curr_row, column=curr_col, padx=padding, pady=10, sticky="nesw")
+            curr_col += 1
             self.emotes_widgets.append(btn)
             self.update_idletasks()
-            curr_x += btn.winfo_width() + 10
+            if emote_per_row is None:
+                emote_width = btn.winfo_width()
+                emote_per_row = 3 if frame_width // emote_width >= 3 else 2
+
             if curr_height < btn.winfo_height():
                 curr_height = btn.winfo_height() + 20
-            if curr_x >= ((btn.winfo_reqwidth() + 10) * 3) + 8:
-                curr_x = 6
-                curr_y += curr_height
-                max_height = curr_height
-                curr_height = 0
-        self.cv_frame.configure(height=curr_y + max_height)
+            if curr_col >= 3:
+                curr_row += 1
+                curr_col = 0
+
+        self.cv_frame.configure(height=curr_height * len(emote_list))
 
     def monitor_sender_thread(self, thread):
         if thread.is_alive():
