@@ -1,3 +1,4 @@
+import ctypes
 import functools
 import json
 import time
@@ -14,6 +15,8 @@ from utils.discord_utils import *
 
 # Set app theme
 set_theme("dark")
+# DPI scaling
+ctypes.windll.shcore.SetProcessDpiAwareness(1)
 
 
 class Downloader(CTk):
@@ -50,7 +53,7 @@ class Downloader(CTk):
         self.label = CTkLabel(self.input_frame, text="Enter Discord Token", height=40, text_font=Font(size=18))
         self.label.pack(fill="x", expand=True)
         # User input
-        self.entry = CTkEntry(self.input_frame, height=35, text_font=Font(size=12))
+        self.entry = CTkEntry(self.input_frame, height=35, text_font=Font(size=12), exportselection=0)
         self.entry.pack(fill="x", expand=False, padx=20)
         # Start the app
         self.button = CTkButton(self.input_frame, text="Run App", height=40, text_font=Font(size=16, weight="bold"),

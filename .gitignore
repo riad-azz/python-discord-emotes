@@ -1,0 +1,4 @@
+# Ignore config/personal file
+data/emotes/*
+data/avatar/avatar.png
+config.json
