@@ -74,11 +74,12 @@ class Downloader(CTk):
             return False
 
         _username = user['username']
-        _avatar_url = f'https://cdn.discordapp.com/avatars/{user["id"]}/{user["avatar"]}.png'
+        if user["avatar"] is not None:
+            _avatar_url = f'https://cdn.discordapp.com/avatars/{user["id"]}/{user["avatar"]}.png'
         _user_tag = "#" + user['discriminator']
 
         self.data["token"] = self.token
-        self.data["user"] = {"avatar_url": _avatar_url,
+        self.data["user"] = {"avatar_url": None,
                              "username": _username,
                              "user_tag": _user_tag}
 
@@ -157,6 +158,9 @@ class Downloader(CTk):
 
     def download_avatar(self):
         avatar_url = self.data["user"]["avatar_url"]
+        if avatar_url is None:
+            self.check["download_avatar"] = True
+            return True
 
         try:
             download_avatar(avatar_url)
@@ -168,9 +172,14 @@ class Downloader(CTk):
         return True
 
     def download_emotes(self):
+        # Create emotes dir if it doesnt exist
+        save_dir = "./data/emotes/"
+        if not path.exists(save_dir):
+            os.makedirs(save_dir)
 
         max_thread = 10
         download_list = [self.emotes_urls[i:i + max_thread] for i in range(0, len(self.emotes_urls), max_thread)]
+
 
         for chunk in download_list:
             try:
@@ -220,13 +229,16 @@ class Downloader(CTk):
         # Run downloader logic
         self.download_thread.start()
         # Monitor downloader thread
-        self.after(1000, lambda: self.monitor_thread)
+        self.after(10, lambda: self.monitor_thread)
 
     def _run_app(self):
         # set the token
         if self.entry.get() == "":
             MessageBox(self, "Error", "Please enter your auth token")
+            self.prog_frame.pack_forget()
+            self.input_frame.pack(fill="both", expand=True)
             return
+
         progress_thread = Thread(target=self.update_progress, args=("Getting ready, this might take some time",))
         progress_thread.start()
         # check if new token entered

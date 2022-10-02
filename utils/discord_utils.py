@@ -11,10 +11,11 @@ from PIL import Image, ImageOps, ImageDraw
 def load_avatar():
     avatar_path = "./data/avatar/avatar.png"
     default_path = "./data/avatar/avatar_default.png"
-    if not path.exists("./data/avatar/avatar.png"):
+    try:
+        image = PhotoImage(file=avatar_path)
+        return image
+    except:
         return PhotoImage(file=default_path)
-
-    return PhotoImage(file=avatar_path)
 
 
 def emote_fromJson(emotes_json, server_id):
@@ -178,12 +179,6 @@ def download_image(url, save_dir='./', img_name="image.png"):
 
 def download_emote(download_obj):
     save_dir = "./data/emotes/"
-
-    if not path.exists("./data/"):
-        os.mkdir("./data/")
-
-    if not path.exists(save_dir):
-        os.mkdir(save_dir)
 
     img_name = download_obj["file_name"]
     url = download_obj["url"]
