@@ -12,7 +12,38 @@ Simple GUI app to send emotes from all joined servers without nitro
 
 * Tkinter ([CustomTkinter-UI](https://github.com/TomSchimansky/CustomTkinter) that was made by [Tom Schimansky](https://github.com/TomSchimansky) to improve the tkinter look)
 * multiprocessing
-* requests library
+* requests
+
+### Installing the program
+
+* Downloading the repo
+```
+git clone https://github.com/riad-azz/discord_emotes.git
+```
+
+_Make sure you are in the discord_emotes folder before running the upcoming commands_
+```
+cd discord_emotes
+```
+
+* Install the requird libraries
+```
+pip install -r requirements.txt
+```
+
+* Running the program as a script
+
+```python
+python main.py
+```
+
+* Running the program as exe
+
+```python
+pyinstaller --onefile --noconsole --windowed main.py
+```
+
+_You can now head to discord_emotes/dist and run the main.exe file_
 
 ### Using the program
 
