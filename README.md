@@ -38,7 +38,7 @@ python main.py
 
 * Running the program as exe
 ```
-pyinstaller --onefile --noconsole --windowed main.py
+pyinstaller --onefile --noconsole --windowed --add-data "C:/Users/<user_name>/AppData/Local/Programs/Python/Python310/Lib/site-packages/customtkinter;customtkinter/" main.py
 ```
 
 _You can now head to discord_emotes/dist and run the main.exe file_
