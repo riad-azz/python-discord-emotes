@@ -14,6 +14,35 @@ Simple GUI app to send emotes from all joined servers without nitro
 * multiprocessing
 * requests library
 
+### Installing the program
+
+* Downloading the repo
+```
+git clone https://github.com/riad-azz/discord_emotes.git
+```
+
+_Make sure you are in the discord_emotes folder before running the upcoming commands_
+```
+cd discord_emotes
+```
+
+* Install the requird libraries
+```
+pip install -r requirements.txt
+```
+
+* Running the program as a script
+```
+python main.py
+```
+
+* Running the program as exe
+```
+pyinstaller --onefile --noconsole --windowed main.py
+```
+
+_You can now head to discord_emotes/dist and run the main.exe file_
+
 ### Using the program
 
 The application consist of 2 parts :
